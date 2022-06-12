@@ -1,23 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from "react";
+import useImages from "./hooks/useImages";
+import ImageGallery from './components/ImageGallery';
+import Loading from './components/Loading';
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faAngleLeft, faAngleRight, faXmark } from '@fortawesome/free-solid-svg-icons'
+
+library.add(faAngleLeft, faAngleRight, faXmark)
 
 function App() {
+  const { getImages, isLoading, isError } = useImages();
+  const [imagesList, setImagesList] = useState([]);
+  const getImagesApi = async () => {
+    const data = await getImages();
+    if (isError) {
+      return;
+    }
+    setImagesList(data);
+  }
+
+  useEffect(() => {
+    getImagesApi();
+    // eslint-disable-next-line
+  }, [])
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {isLoading ? <Loading /> : <ImageGallery imagesList={imagesList}/>}
     </div>
   );
 }
